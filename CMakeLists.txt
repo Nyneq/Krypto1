@@ -1,0 +1,9 @@
+cmake_minimum_required(VERSION 3.14)
+
+project(krypto1)
+
+set(CMAKE_CXX_STANDARD 14)
+
+set(SOURCE_FILES src/main.cpp)
+
+add_executable(krypto1 ${SOURCE_FILES})
