@@ -90,12 +90,15 @@ void DES_algorithm(std::vector< std::vector <bool> >& vec, std::vector<bool>& ke
         mk_half_vector(vec, left_vec, 0, block_number);         // splitting vector in half for the algorithm
         mk_half_vector(vec, right_vec, 32, block_number);       // splitting vector in half for the algorithm
 
-        // from here it will be in round funcition
+        // from here it will be in round function
         for (int round_count = 1; round_count < 17; round_count++)             // do the 16 rounds
         {
             std::vector <bool> short_key;
             round(left_key, right_key, left_vec, right_vec, short_key, round_count);
         }
+
+        combine_halves(vec, left_vec, right_vec, block_number);     // combining left and right part swapped
+        final_permutation(vec, block_number);                              // inverse initial permutation
 
     }
 }
@@ -117,17 +120,18 @@ void round(std::vector <bool>& left_key, std::vector <bool>& right_key, std::vec
     }
 
     std::vector <bool> right_vec_copy = right_vec;                              // creating copy to save right side for next iteration, copy is eddited
-    right_vec_copy.resize(48);
+    right_vec_copy.resize(48);                                         // resize copy for the expansion permutation
     short_key.insert(short_key.end(), left_key.begin(), left_key.end());        // combining left and right
     short_key.insert(short_key.end(), right_key.begin(), right_key.end());      // part of the key into one
     reduce_and_permute_choice2(short_key);                                  // permute 2 and reduction to 48 elements
     expansion_permutation(right_vec_copy);                                  // expansion permutation
     vectors_XOR(right_vec_copy, short_key);                             // xor right side and key, we use right side for next steps
-    s_box(right_vec_copy);
-    post_box_permutation(right_vec_copy);
-    vectors_XOR(right_vec_copy, left_vec);
-    //do: xor of right_vec_copy and left_vec then make it work with next iteration of round
-
+    s_box(right_vec_copy);                                                  // doing the s-boxes
+    post_box_permutation(right_vec_copy);                                   // permutation after doing xbox
+    vectors_XOR(right_vec_copy, left_vec);                              // xor of changed right part of plain txt and left part
+    left_vec = right_vec;                                                       // assignment of vectors for the next round
+    right_vec = right_vec_copy;                                                 // assignment of vectors for the next round
+                                                                                // no need to change anything in keys
 }
 
 void rotate_left(std::vector <bool>& vec)
@@ -288,7 +292,7 @@ void int_to_bin(rep &box, std::vector <bool>& vec, int s_box_number)
 void s_box(std::vector <bool>& vec)
 {
     std::vector <bool> tmp_vec(32);
-    rep box;
+    rep box = rep();
     box.row_bin.resize(2);
     box.column_bin.resize(4);
     for (int s_box_number = 0; s_box_number < 8; s_box_number++ )
@@ -316,5 +320,32 @@ void post_box_permutation(std::vector <bool>& vec)
     for ( int i = 0; i < 32; i++ )
     {
         vec[i] = tmp_vec[position[i] - 1];
+    }
+}
+
+void combine_halves(std::vector <std::vector <bool> >& vec, std::vector <bool>& left_vec, std::vector <bool>& right_vec, int block_number)
+{
+    for ( int i = 0; i < 32; i++ )
+    {
+        vec[block_number][i] = right_vec[i];
+        vec[block_number][i + 32] = left_vec[i];
+    }
+}
+
+void final_permutation(std::vector <std::vector <bool> >& vec, int block_number)
+{
+    int positions[64] = {    40,8,48,16,56,24,64,32,
+                             39,7,47,15,55,23,63,31,
+                             38,6,46,14,54,22,62,30,
+                             37,5,45,13,53,21,61,29,
+                             36,4,44,12,52,20,60,28,
+                             35,3,43,11,51,19,59,27,
+                             34,2,42,10,50,18,58,26,
+                             33,1,41,9,49,17,57,25 };
+    std::vector <bool> tmp_vec(64);
+    tmp_vec = vec[block_number];
+    for (int i = 0; i < vec.size(); i++)
+    {
+        vec[block_number][i] = tmp_vec[positions[i] - 1];
     }
 }

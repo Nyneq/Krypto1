@@ -18,6 +18,8 @@ int main()
 
     DES_algorithm(blocks, key, number_of_blocks);
 
+    //Zrob deszyfrowanie, tak samo jak szyfrowanie tylko w roundach kolejność od tyłu i rotujesz w prawo dodatkowo za pierwszym razem nie rotujesz.
+
 
 
     return 0;

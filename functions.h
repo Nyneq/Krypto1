@@ -30,5 +30,7 @@ void bin_to_int(rep &box);
 void int_to_bin(rep &box, std::vector <bool>& vec, int s_box_number);
 void s_box(std::vector <bool>& vec);
 void post_box_permutation(std::vector <bool>& vec);
+void combine_halves(std::vector <std::vector <bool> >& vec, std::vector <bool>& left_vec, std::vector <bool>& right_vec, int block_number);
+void final_permutation(std::vector <std::vector <bool> >& vec, int block_number);
 
 #endif //KRYPTO1_FUNCTIONS_H
