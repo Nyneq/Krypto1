@@ -59,14 +59,16 @@ void separate_into_blocks(std::vector<bool> base_vec, std::vector< std::vector<b
 
 void initial_permutation(std::vector< std::vector <bool> >& vec, int block_number)
 {
-    int swap_positions[64] = {58, 50, 42, 34, 26, 18, 10, 2,
-                              60, 52, 44, 36, 28, 20, 12, 4,
-                              62, 54, 46, 38, 30, 22, 14, 6,
-                              64, 56, 48, 40, 32, 24, 16, 8,
-                              57, 49, 41, 33, 25, 17, 9, 1,
-                              59, 51, 43, 35, 27, 19, 11, 3,
-                              61, 53, 45, 37, 29, 21, 13, 5,
-                              63, 55, 47, 39, 31, 23, 15, 7};
+    int swap_positions[64] =
+            {    58,50,42,34,26,18,10,2,
+                 60,52,44,36,28,20,12,4,
+                 62,54,46,38,30,22,14,6,
+                 64,56,48,40,32,24,16,8,
+                 57,49,41,33,25,17,9,1,
+                 59,51,43,35,27,19,11,3,
+                 61,53,45,37,29,21,13,5,
+                 63,55,47,39,31,23,15,7
+            };
     std::vector<bool> tmp_vec = vec[block_number];
 
     for( int i = 0; i < 64; i++)
@@ -79,11 +81,11 @@ void DES_algorithm(std::vector< std::vector <bool> >& vec, std::vector<bool>& ke
 {
     reduce_and_permute_choice1(key);
     std::vector<bool> left_key(28), right_key(28);
-    mk_half_key(key, left_key, 0);
-    mk_half_key(key, right_key, 28);
 
     for ( int block_number = 0; block_number < number_of_blocks; block_number++ )
     {
+        mk_half_key(key, left_key, 0);
+        mk_half_key(key, right_key, 28);
         initial_permutation(vec, block_number);
         std::vector <bool> left_vec(32);
         std::vector <bool> right_vec(32);
@@ -119,10 +121,12 @@ void round(std::vector <bool>& left_key, std::vector <bool>& right_key, std::vec
         }
     }
 
-    std::vector <bool> right_vec_copy = right_vec;                              // creating copy to save right side for next iteration, copy is eddited
+    std::vector <bool> right_vec_copy(32);
+    right_vec_copy = right_vec;                                                 // creating copy to save right side for next iteration, copy is eddited
     right_vec_copy.resize(48);                                         // resize copy for the expansion permutation
     short_key.insert(short_key.end(), left_key.begin(), left_key.end());        // combining left and right
     short_key.insert(short_key.end(), right_key.begin(), right_key.end());      // part of the key into one
+    // tu kontynuacja przeglądu
     reduce_and_permute_choice2(short_key);                                  // permute 2 and reduction to 48 elements
     expansion_permutation(right_vec_copy);                                  // expansion permutation
     vectors_XOR(right_vec_copy, short_key);                             // xor right side and key, we use right side for next steps
@@ -177,9 +181,21 @@ void expansion_permutation(std::vector <bool>& vec)
 
 void reduce_and_permute_choice1(std::vector <bool>& key)
 {
-    for ( int position = 7; position < 64; position += 8 )
+    int positions[56]=
+            {    57,49,41,33,25,17,9,
+                 1,58,50,42,34,26,18,
+                 10,2,59,51,43,35,27,
+                 19,11,3,60,52,44,36,
+                 63,55,47,39,31,23,15,
+                 7,62,54,46,38,30,22,
+                 14,6,61,53,45,37,29,
+                 21,13,5,28,20,12,4
+            };
+    std::vector <bool> tmp_vec = key;
+    key.resize(56);
+    for ( int i = 0; i < key.size(); i++ )
     {
-        key.erase(key.begin() + position);
+        key[i] = tmp_vec[positions[i] - 1];
     }
 }
 
