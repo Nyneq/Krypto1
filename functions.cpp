@@ -50,8 +50,7 @@ void edit_base_vector(std::vector<bool>& vec, int blocks_number)
 
 void separate_into_blocks(std::vector<bool> base_vec, std::vector< std::vector<bool> >& blocks)
 {
-    int len = base_vec.size();
-    for ( int i = 0; i < len; i++)
+    for ( int i = 0; i < base_vec.size(); i++)
     {
         blocks[i / 64].push_back(base_vec[i]);
     }
@@ -105,6 +104,65 @@ void DES_algorithm(std::vector< std::vector <bool> >& vec, std::vector<bool>& ke
     }
 }
 
+void DES_algorithm_decryption(std::vector< std::vector <bool> >& vec, std::vector<bool>& key, int number_of_blocks)
+{
+    reduce_and_permute_choice1(key);
+    std::vector<bool> left_key(28), right_key(28);
+
+    for (int block_number = 0; block_number < number_of_blocks; block_number++)
+    {
+        mk_half_key(key, left_key, 0);
+        mk_half_key(key, right_key, 28);
+        initial_permutation(vec, block_number);
+        std::vector<bool> left_vec(32);
+        std::vector<bool> right_vec(32);
+        mk_half_vector(vec, left_vec, 0, block_number);         // splitting vector in half for the algorithm
+        mk_half_vector(vec, right_vec, 32, block_number);       // splitting vector in half for the algorithm
+
+        for (int round_count = 16; round_count > 0; round_count--)             // do the 16 rounds
+        {
+            std::vector<bool> short_key;
+            round_decryption(left_key, right_key, left_vec, right_vec, short_key, round_count);
+        }
+
+        combine_halves(vec, left_vec, right_vec, block_number);     // combining left and right part swapped
+        final_permutation(vec, block_number);                              // inverse initial permutation
+
+    }
+}
+
+void round_decryption(std::vector <bool>& left_key, std::vector <bool>& right_key, std::vector <bool>& left_vec, std::vector <bool>& right_vec, std::vector <bool>& short_key, int round_count)
+{
+    if ( round_count == 1 || round_count == 7 || round_count == 15 )     // rotate right 1 or 2 depending on the round number
+    {
+        rotate_right(left_key);
+        rotate_right(right_key);
+    }
+    else if ( round_count != 16 )
+    {
+        for (int i = 0; i < 2; ++i)
+        {
+            rotate_right(left_key);
+            rotate_right(right_key);
+        }
+    }
+
+    std::vector <bool> right_vec_copy(32);
+    right_vec_copy = right_vec;                                                 // creating copy to save right side for next iteration, copy is eddited
+    right_vec_copy.resize(48);                                         // resize copy for the expansion permutation
+    short_key.insert(short_key.end(), left_key.begin(), left_key.end());        // combining left and right
+    short_key.insert(short_key.end(), right_key.begin(), right_key.end());      // part of the key into one
+    reduce_and_permute_choice2(short_key);                                  // permute 2 and reduction to 48 elements
+    expansion_permutation(right_vec_copy);                                  // expansion permutation
+    vectors_XOR(right_vec_copy, short_key);                             // xor right side and key, we use right side for next steps
+    s_box(right_vec_copy);                                                  // doing the s-boxes
+    post_box_permutation(right_vec_copy);                                   // permutation after doing xbox
+    vectors_XOR(right_vec_copy, left_vec);                              // xor of changed right part of plain txt and left part
+    left_vec = right_vec;                                                       // assignment of vectors for the next round
+    right_vec = right_vec_copy;                                                 // assignment of vectors for the next round
+    // no need to change anything in keys
+}
+
 void round(std::vector <bool>& left_key, std::vector <bool>& right_key, std::vector <bool>& left_vec, std::vector <bool>& right_vec, std::vector <bool>& short_key, int round_count)
 {
     if (round_count == 1 || round_count == 2 || round_count == 9 || round_count == 16 )     // rotate left 1 or 2 depending on the round number
@@ -135,6 +193,12 @@ void round(std::vector <bool>& left_key, std::vector <bool>& right_key, std::vec
     left_vec = right_vec;                                                       // assignment of vectors for the next round
     right_vec = right_vec_copy;                                                 // assignment of vectors for the next round
                                                                                 // no need to change anything in keys
+}
+
+void rotate_right(std::vector <bool>& vec)
+{
+    vec.insert(vec.begin(), vec[27]);
+    vec.pop_back();
 }
 
 void rotate_left(std::vector <bool>& vec)
