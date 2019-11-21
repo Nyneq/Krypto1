@@ -18,10 +18,11 @@ int get_blocks_number(const std::vector<bool>& vec);
 void print_vector(const std::vector<bool>& vec);
 void separate_into_blocks(std::vector<bool> base_vec, std::vector< std::vector<bool> >& blocks);
 void initial_permutation(std::vector< std::vector<bool> >& vec, int block_number);                  // part of DES algorithm
-void DES_algorithm(std::vector< std::vector <bool> >&, std::vector<bool>& key, int number_of_blocks);                        // takes in vector of "blocks"
+void DES_algorithm(std::vector< std::vector <bool> >& vec, std::vector<std::vector <bool> >& keys, int number_of_blocks);                        // takes in vector of "blocks"
+void make_encryption_keys(std::vector<bool>& base_key, std::vector< std::vector <bool> >& keys);
 void DES_algorithm_decryption(std::vector< std::vector <bool> >& vec, std::vector<bool>& key, int number_of_blocks);
-void round_decryption(std::vector <bool>& left_key, std::vector <bool>& right_key, std::vector <bool>& left_vec, std::vector <bool>& right_vec, std::vector <bool>& short_key, int round_count);
-void round(std::vector <bool>& left_key, std::vector <bool>& right_key, std::vector <bool>& left_vec, std::vector <bool>& right_vec, std::vector <bool>& short_key, int round_count);
+void round_decryption(std::vector <bool>& key, std::vector <bool>& left_vec, std::vector <bool>& right_vec);
+void round(std::vector <bool>& key, std::vector <bool>& left_vec, std::vector <bool>& right_vec);
 void rotate_right(std::vector <bool>& vec);
 void rotate_left(std::vector <bool>& vec);
 void mk_half_vector(std::vector< std::vector <bool> > base_vec, std::vector <bool>& half_vec, int start_point, int block_number);
