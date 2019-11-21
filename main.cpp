@@ -8,9 +8,6 @@ int main()
     bool array[] = {0,1,1,0,0,0,0,1,0,1,1,0,0,0,0,1,0,1,1,0,0,0,0,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     vector<bool> base_key = {0,1,1,0,0,0,0,1,0,1,1,0,0,0,0,1,0,1,1,0,0,0,0,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
-    // preping keys for algorithm
-    vector< vector <bool> > keys(16);
-    make_keys(base_key, keys);
     // end of manual setup for testing
     vector<bool> all_data (array, array + sizeof(array) / sizeof(bool) );  // changing array to vector
 
@@ -19,7 +16,7 @@ int main()
     edit_base_vector(all_data, get_blocks_number(all_data));                // make our vector's length be multiple of 64
     separate_into_blocks(all_data, blocks);                                 // splitting all the data into vector that contains vectors of 64 elements
 
-    DES_algorithm(blocks, );
+    DES_algorithm(blocks, number_of_blocks);
     DES_algorithm_decryption(blocks, base_key, number_of_blocks);
 
     for ( int i = 0; i < 64; i++)

@@ -76,8 +76,10 @@ void initial_permutation(std::vector< std::vector <bool> >& vec, int block_numbe
     }
 }
 
-void DES_algorithm(std::vector< std::vector <bool> >& vec, std::vector< std::vector< bool> >& keys, int number_of_blocks)
+void DES_algorithm(std::vector< std::vector <bool> >& vec, std::vector<bool>& base_key, int number_of_blocks)
 {
+    std::vector< std::vector <bool> > keys(16);
+    make_keys(base_key, keys);
     for ( int block_number = 0; block_number < number_of_blocks; block_number++ )
     {
         initial_permutation(vec, block_number);
@@ -133,8 +135,13 @@ void make_keys(std::vector<bool>& base_key, std::vector< std::vector <bool> >& k
     }
 }
 
-void DES_algorithm_decryption(std::vector< std::vector <bool> >& vec, std::vector<bool>& key, int number_of_blocks)
+void DES_algorithm_decryption(std::vector< std::vector <bool> >& vec, std::vector<bool>& base_key, int number_of_blocks)
 {
+    std::vector< std::vector <bool> > keys(16);                           // vector of vectors that will contain keys
+    make_keys(base_key, keys);                                        // preparing keys encryption way
+
+    // here prep keys for decryption and make changes from here on
+
     for (int block_number = 0; block_number < number_of_blocks; block_number++)
     {
         initial_permutation(vec, block_number);

@@ -17,8 +17,8 @@ void print_block(const std::vector< std::vector <bool> >& vec, int block_number)
 int get_blocks_number(const std::vector<bool>& vec);
 void print_vector(const std::vector<bool>& vec);
 void separate_into_blocks(std::vector<bool> base_vec, std::vector< std::vector<bool> >& blocks);
-void initial_permutation(std::vector< std::vector<bool> >& vec, int block_number);                  // part of DES algorithm
-void DES_algorithm(std::vector< std::vector <bool> >& vec, std::vector<std::vector <bool> >& keys, int number_of_blocks);                        // takes in vector of "blocks"
+void initial_permutation(std::vector< std::vector<bool> >& vec, int block_number);                                      // part of DES algorithm
+void DES_algorithm(std::vector< std::vector <bool> >& vec, std::vector<bool>& base_key, int number_of_blocks);          // takes in vector of "blocks"
 void make_keys(std::vector<bool>& base_key, std::vector< std::vector <bool> >& keys);
 void DES_algorithm_decryption(std::vector< std::vector <bool> >& vec, std::vector<bool>& key, int number_of_blocks);
 void round_decryption(std::vector <bool>& key, std::vector <bool>& left_vec, std::vector <bool>& right_vec);
