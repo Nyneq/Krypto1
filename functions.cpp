@@ -101,7 +101,7 @@ void DES_algorithm(std::vector< std::vector <bool> >& vec, std::vector< std::vec
     }
 }
 
-void make_encryption_keys(std::vector<bool>& base_key, std::vector< std::vector <bool> >& keys)
+void make_keys(std::vector<bool>& base_key, std::vector< std::vector <bool> >& keys)
 {
     reduce_and_permute_choice1(base_key);
     std::vector<bool> left_key(28), right_key(28);
@@ -148,7 +148,7 @@ void DES_algorithm_decryption(std::vector< std::vector <bool> >& vec, std::vecto
         {
             tmp_key.clear();
             tmp_key.resize(48);
-            round_decryption(tmp_key left_vec, right_vec);
+            round_decryption(tmp_key, left_vec, right_vec);
         }
 
         combine_halves(vec, left_vec, right_vec, block_number);     // combining left and right part swapped
