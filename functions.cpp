@@ -135,6 +135,11 @@ void make_keys(std::vector<bool>& base_key, std::vector< std::vector <bool> >& k
     }
 }
 
+void make_decryption_keys(std::vector< std::vector <bool> >& keys)
+{
+    // kolejność i rotacje pod deszyfrowanie
+}
+
 void DES_algorithm_decryption(std::vector< std::vector <bool> >& vec, std::vector<bool>& base_key, int number_of_blocks)
 {
     std::vector< std::vector <bool> > keys(16);                           // vector of vectors that will contain keys
