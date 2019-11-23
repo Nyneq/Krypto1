@@ -1,25 +1,6 @@
 #include "functions.h"
 #include <iostream>
 
-
-void print_vector(const std::vector<bool>& vec)
-{
-    std::cout << "Content of the vector:  ";
-    for (auto && i : vec)
-    {
-        std::cout << " " << i;
-    }
-}
-
-void print_block(const std::vector< std::vector <bool> >& vec, int block_number)
-{
-    std::cout << "\nContent of the block number " << block_number << " :";
-    for ( int i = 0; i < 64; i++ )
-    {
-        std:: cout << " " << vec[block_number][i];
-    }
-}
-
 int get_blocks_number(const std::vector<bool>& vec)
 {
     int size = vec.size(), number = 0;
@@ -107,7 +88,7 @@ void make_keys(std::vector<bool>& base_key, std::vector< std::vector <bool> >& k
     }
 }
 
-void DES_algorithm(std::vector< std::vector <bool> >& vec, std::vector<bool>& base_key, int number_of_blocks)
+void DES_algorithm(std::vector< std::vector <bool> >& vec, std::vector<bool> base_key, int number_of_blocks)
 {
     std::vector< std::vector <bool> > keys(16);
     make_keys(base_key, keys);
@@ -133,7 +114,7 @@ void DES_algorithm(std::vector< std::vector <bool> >& vec, std::vector<bool>& ba
     }
 }
 
-void DES_algorithm_decryption(std::vector< std::vector <bool> >& vec, std::vector<bool>& base_key, int number_of_blocks)
+void DES_algorithm_decryption(std::vector< std::vector <bool> >& vec, std::vector<bool> base_key, int number_of_blocks)
 {
     std::vector< std::vector <bool> > keys(16);                           // vector of vectors that will contain keys
     make_keys(base_key, keys);                                        // preparing keys encryption way
