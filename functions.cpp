@@ -76,33 +76,6 @@ void initial_permutation(std::vector< std::vector <bool> >& vec, int block_numbe
     }
 }
 
-void DES_algorithm(std::vector< std::vector <bool> >& vec, std::vector<bool>& base_key, int number_of_blocks)
-{
-    std::vector< std::vector <bool> > keys(16);
-    make_keys(base_key, keys);
-    for ( int block_number = 0; block_number < number_of_blocks; block_number++ )
-    {
-        initial_permutation(vec, block_number);
-        std::vector <bool> left_vec(32);
-        std::vector <bool> right_vec(32);
-        std::vector <bool> tmp_key;
-        mk_half_vector(vec, left_vec, 0, block_number);         // splitting vector in half for the algorithm
-        mk_half_vector(vec, right_vec, 32, block_number);       // splitting vector in half for the algorithm
-
-        // from here it will be in round function
-        for (int round_count = 1; round_count < 17; round_count++)             // do the 16 rounds
-        {
-            tmp_key.clear();
-            tmp_key.resize(48);
-            tmp_key = keys[round_count - 1];
-            round(tmp_key, left_vec, right_vec);
-        }
-        combine_halves(vec, left_vec, right_vec, block_number);     // combining left and right part swapped
-        final_permutation(vec, block_number);                              // inverse initial permutation
-
-    }
-}
-
 void make_keys(std::vector<bool>& base_key, std::vector< std::vector <bool> >& keys)
 {
     reduce_and_permute_choice1(base_key);
@@ -135,9 +108,30 @@ void make_keys(std::vector<bool>& base_key, std::vector< std::vector <bool> >& k
     }
 }
 
-void make_decryption_keys(std::vector< std::vector <bool> >& keys)
+void DES_algorithm(std::vector< std::vector <bool> >& vec, std::vector<bool>& base_key, int number_of_blocks)
 {
-    // kolejność i rotacje pod deszyfrowanie
+    std::vector< std::vector <bool> > keys(16);
+    make_keys(base_key, keys);
+    for ( int block_number = 0; block_number < number_of_blocks; block_number++ )
+    {
+        initial_permutation(vec, block_number);
+        std::vector <bool> left_vec(32);
+        std::vector <bool> right_vec(32);
+        std::vector <bool> tmp_key;
+        mk_half_vector(vec, left_vec, 0, block_number);         // splitting vector in half for the algorithm
+        mk_half_vector(vec, right_vec, 32, block_number);       // splitting vector in half for the algorithm
+
+        // from here it will be in round function
+        for (int round_count = 1; round_count < 17; round_count++)             // do the 16 rounds
+        {
+            tmp_key.clear();
+            tmp_key.resize(48);
+            tmp_key = keys[round_count - 1];
+            round(tmp_key, left_vec, right_vec);
+        }
+        combine_halves(vec, left_vec, right_vec, block_number);     // combining left and right part swapped
+        final_permutation(vec, block_number);                              // inverse initial permutation
+    }
 }
 
 void DES_algorithm_decryption(std::vector< std::vector <bool> >& vec, std::vector<bool>& base_key, int number_of_blocks)
@@ -155,14 +149,13 @@ void DES_algorithm_decryption(std::vector< std::vector <bool> >& vec, std::vecto
         std::vector <bool> tmp_key;
         mk_half_vector(vec, left_vec, 0, block_number);         // splitting vector in half for the algorithm
         mk_half_vector(vec, right_vec, 32, block_number);       // splitting vector in half for the algorithm
-
         for (int round_count = 16; round_count > 0; round_count--)             // do the 16 rounds
         {
             tmp_key.clear();
             tmp_key.resize(48);
+            tmp_key = keys[round_count - 1];
             round_decryption(tmp_key, left_vec, right_vec);
         }
-
         combine_halves(vec, left_vec, right_vec, block_number);     // combining left and right part swapped
         final_permutation(vec, block_number);                              // inverse initial permutation
 
@@ -174,16 +167,9 @@ void round_decryption(std::vector <bool>& key, std::vector <bool>& left_vec, std
     std::vector <bool> right_vec_copy(32);
     right_vec_copy = right_vec;                                                 // creating copy to save right side for next iteration, copy is eddited
     right_vec_copy.resize(48);                                         // resize copy for the expansion permutation
-
-
-    short_key.insert(short_key.end(), left_key.begin(), left_key.end());        // combining left and right
-    short_key.insert(short_key.end(), right_key.begin(), right_key.end());      // part of the key into one
-
-    reduce_and_permute_choice2(short_key);                                  // permute 2 and reduction to 48 elements
     expansion_permutation(right_vec_copy);                                  // expansion permutation
 
-
-    vectors_XOR(right_vec_copy, key);                             // xor right side and key, we use right side for next steps
+    vectors_XOR(right_vec_copy, key);                                   // xor right side and key, we use right side for next steps
     s_box(right_vec_copy);                                                  // doing the s-boxes
     post_box_permutation(right_vec_copy);                                   // permutation after doing xbox
     vectors_XOR(right_vec_copy, left_vec);                              // xor of changed right part of plain txt and left part
@@ -198,10 +184,10 @@ void round(std::vector <bool>& key, std::vector <bool>& left_vec, std::vector <b
     right_vec_copy = right_vec;                                                 // creating copy to save right side for next iteration, copy is eddited
     right_vec_copy.resize(48);                                         // resize copy for the expansion permutation
 
-    // here were operations on keys
+    // here were do operations on keys
 
     expansion_permutation(right_vec_copy);                                  // expansion permutation
-    vectors_XOR(right_vec_copy, key);                             // xor right side and key, we use right side for next steps
+    vectors_XOR(right_vec_copy, key);                                   // xor right side and key, we use right side for next steps
     s_box(right_vec_copy);                                                  // doing the s-boxes
     post_box_permutation(right_vec_copy);                                   // permutation after doing xbox
     vectors_XOR(right_vec_copy, left_vec);                              // xor of changed right part of plain txt and left part
@@ -210,7 +196,7 @@ void round(std::vector <bool>& key, std::vector <bool>& left_vec, std::vector <b
                                                                                 // no need to change anything in keys
 }
 
-void rotate_right(std::vector <bool>& vec)
+void rotate_right(std::vector <bool>& vec)                                      // PROBABLY GONNA DELETE IT
 {
     vec.insert(vec.begin(), vec[27]);
     vec.pop_back();

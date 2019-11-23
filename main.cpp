@@ -16,7 +16,7 @@ int main()
     edit_base_vector(all_data, get_blocks_number(all_data));                // make our vector's length be multiple of 64
     separate_into_blocks(all_data, blocks);                                 // splitting all the data into vector that contains vectors of 64 elements
 
-    DES_algorithm(blocks, number_of_blocks);
+    DES_algorithm(blocks, base_key, number_of_blocks);
     DES_algorithm_decryption(blocks, base_key, number_of_blocks);
 
     for ( int i = 0; i < 64; i++)

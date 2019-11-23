@@ -23,7 +23,6 @@ void make_keys(std::vector<bool>& base_key, std::vector< std::vector <bool> >& k
 void DES_algorithm_decryption(std::vector< std::vector <bool> >& vec, std::vector<bool>& key, int number_of_blocks);
 void round_decryption(std::vector <bool>& key, std::vector <bool>& left_vec, std::vector <bool>& right_vec);
 void round(std::vector <bool>& key, std::vector <bool>& left_vec, std::vector <bool>& right_vec);
-void rotate_right(std::vector <bool>& vec);
 void rotate_left(std::vector <bool>& vec);
 void mk_half_vector(std::vector< std::vector <bool> > base_vec, std::vector <bool>& half_vec, int start_point, int block_number);
 void mk_half_key(std::vector<bool> base_vec, std::vector <bool>& half_vec, int start_point);
