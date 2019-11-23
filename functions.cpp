@@ -48,7 +48,7 @@ void edit_base_vector(std::vector<bool>& vec, int blocks_number)
     }
 }
 
-void separate_into_blocks(std::vector<bool> base_vec, std::vector< std::vector<bool> >& blocks)
+void separate_into_blocks(std::vector<bool>& base_vec, std::vector< std::vector<bool> >& blocks)
 {
     for ( int i = 0; i < base_vec.size(); i++)
     {
@@ -86,7 +86,6 @@ void make_keys(std::vector<bool>& base_key, std::vector< std::vector <bool> >& k
     for ( int round_count = 1; round_count < 17; round_count++ )
     {
         short_key.clear();
-        short_key.resize(56);
         if (round_count == 1 || round_count == 2 || round_count == 9 || round_count == 16 )     // rotate left 1 or 2 depending on the round number
         {
             rotate_left(left_key);
@@ -180,11 +179,8 @@ void round_decryption(std::vector <bool>& key, std::vector <bool>& left_vec, std
 
 void round(std::vector <bool>& key, std::vector <bool>& left_vec, std::vector <bool>& right_vec)
 {
-    std::vector <bool> right_vec_copy(32);
-    right_vec_copy = right_vec;                                                 // creating copy to save right side for next iteration, copy is eddited
+    std::vector <bool> right_vec_copy = right_vec;                              // creating copy to save right side for next iteration, copy is eddited
     right_vec_copy.resize(48);                                         // resize copy for the expansion permutation
-
-    // here were do operations on keys
 
     expansion_permutation(right_vec_copy);                                  // expansion permutation
     vectors_XOR(right_vec_copy, key);                                   // xor right side and key, we use right side for next steps
@@ -208,17 +204,17 @@ void rotate_left(std::vector <bool>& vec)
     vec.erase(vec.begin());
 }
 
-void mk_half_vector(std::vector< std::vector <bool> > base_vec, std::vector <bool>& half_vec, int start_point, int block_number)
+void mk_half_vector(std::vector< std::vector <bool> >& base_vec, std::vector <bool>& half_vec, int start_point, int block_number)
 {
-    for( int i = 0; i < 32; i++ )
+    for( int i = 0; i < half_vec.size(); i++ )
     {
         half_vec[i] = base_vec[block_number][i + start_point];
     }
 }
 
-void mk_half_key(std::vector<bool> base_vec, std::vector <bool>& half_vec, int start_point)
+void mk_half_key(std::vector<bool>& base_vec, std::vector <bool>& half_vec, int start_point)
 {
-    for( int i = 0; i < 28; i++ )
+    for( int i = 0; i < half_vec.size(); i++ )
     {
         half_vec[i] = base_vec[i + start_point];
     }
@@ -226,18 +222,15 @@ void mk_half_key(std::vector<bool> base_vec, std::vector <bool>& half_vec, int s
 
 void expansion_permutation(std::vector <bool>& vec)
 {
-    int positions[48] = {32,  1,  2,  3,  4,  5,
-                         4,   5,  6,  7,  8,  9,
-                         8,   9, 10, 11, 12, 13,
-                         12, 13, 14, 15, 16, 17,
-                         16, 17, 18, 19, 20, 21,
-                         20, 21, 22, 23, 24, 25,
-                         24, 25, 26, 27, 28, 29,
-                         28, 29, 30, 31, 32, 1};
-
+    int positions[48] = {    32,1,2,3,4,5,4,5,
+                             6,7,8,9,8,9,10,11,
+                             12,13,12,13,14,15,16,17,
+                             16,17,18,19,20,21,20,21,
+                             22,23,24,25,24,25,26,27,
+                             28,29,28,29,30,31,32,1};
     std::vector <bool> tmp_vec = vec;
 
-    for ( int i = 0; i < 48; i++ )
+    for ( int i = 0; i < vec.size(); i++ )
     {
         vec[i] = tmp_vec[positions[i] - 1];
     }
@@ -288,11 +281,11 @@ void vectors_XOR(std::vector <bool>& vec1, std::vector <bool>& vec2)
 void bin_to_int(rep &box)
 {
     int tmp_int_row = 0, tmp_int_column = 0;
-    for (int i = 0, pow =1; i > 2; i++, pow << 1 )
+    for (int i = 0, pow = 1; i < 2; i++, pow = pow * 2 )
     {
         tmp_int_row = tmp_int_row + (pow * box.row_bin[i]);
     }
-    for (int i = 0, pow = 1; i > 4; i++, pow << 1 )
+    for (int i = 0, pow = 1; i < 4; i++, pow = pow * 2 )
     {
         tmp_int_column = tmp_int_column + (pow * box.column_bin[i]);
     }
@@ -377,7 +370,7 @@ void s_box(std::vector <bool>& vec)
     {
         box.row_bin[1] = vec[s_box_number * 6];
         box.row_bin[0] = vec[s_box_number * 6 + 5];
-        for (int i = 1, j = 5 ; i < 5; i++, j-- )
+        for (int i = 1, j = 4 ; i < 5; i++, j-- )
         {
             box.column_bin[j - 1] = vec[s_box_number * 6 + i];
         }
@@ -389,12 +382,11 @@ void s_box(std::vector <bool>& vec)
 
 void post_box_permutation(std::vector <bool>& vec)
 {
-    int position[32] = {16,7,20,21,29,12,28,17,
+    int position[32] ={ 16,7,20,21,29,12,28,17,
                         1,15,23,26,5,18,31,10,
                         2,8,24,14,32,27,3,9,
                         19,13,30,6,22,11,4,25};
-    std::vector <bool> tmp_vec(32);
-    tmp_vec = vec;
+    std::vector <bool> tmp_vec = vec;
     for ( int i = 0; i < 32; i++ )
     {
         vec[i] = tmp_vec[position[i] - 1];
@@ -420,9 +412,8 @@ void final_permutation(std::vector <std::vector <bool> >& vec, int block_number)
                              35,3,43,11,51,19,59,27,
                              34,2,42,10,50,18,58,26,
                              33,1,41,9,49,17,57,25 };
-    std::vector <bool> tmp_vec(64);
-    tmp_vec = vec[block_number];
-    for (int i = 0; i < vec.size(); i++)
+    std::vector <bool> tmp_vec = vec[block_number];
+    for (int i = 0; i < tmp_vec.size(); i++)
     {
         vec[block_number][i] = tmp_vec[positions[i] - 1];
     }
